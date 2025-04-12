@@ -3,22 +3,21 @@ import fetch from 'node-fetch';
 export default async function handler(req, res) {
   const { messages } = req.body;
 
-  const lastUserMessage = messages[messages.length - 1]?.content || '';
-  const input_text = `Act like an emotional support friend. Respond in Hebrew, in a warm and caring way, to the following message:\n"${lastUserMessage}"`;
+  const prompt = messages[messages.length - 1]?.content || "שלום";
 
-  const hfResponse = await fetch('https://api-inference.huggingface.co/models/google/flan-t5-small', {
-    method: 'POST',
+  const response = await fetch("https://api-inference.huggingface.co/models/google/flan-t5-small", {
+    method: "POST",
     headers: {
-      'Authorization': `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
-      'Content-Type': 'application/json',
+      "Authorization": `Bearer ${process.env.HUGGINGFACE_API_TOKEN}`,
+      "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      inputs: input_text
-    }),
+      inputs: `ענה בעברית, בטון חם, תומך, כמו חבר טוב: ${prompt}`
+    })
   });
 
-  const hfData = await hfResponse.json();
-  const reply = hfData?.[0]?.generated_text || 'מצטערת, משהו השתבש. רוצה לנסות שוב?';
+  const data = await response.json();
 
+  const reply = data?.[0]?.generated_text || "מצטערת, משהו השתבש. רוצה לנסות שוב?";
   res.status(200).json({ reply });
 }
