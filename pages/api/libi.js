@@ -15,6 +15,10 @@ export default async function handler(req, res) {
 
   const data = await response.json();
 
-  const reply = data?.[0]?.generated_text || "מצטערת, לא הצלחתי להבין... תרצי לנסות שוב?";
+  // 🟡 הדפסת התוצאה בלוגים של Vercel
+  console.log("🔍 HuggingFace Response:", data);
+
+  const reply = data?.[0]?.generated_text || "מצטערת, לא הצלחתי להבין...";
+
   res.status(200).json({ reply });
 }
