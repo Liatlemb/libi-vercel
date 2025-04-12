@@ -1,35 +1,35 @@
+import { Configuration, OpenAIApi } from "openai";
+
+const configuration = new Configuration({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const openai = new OpenAIApi(configuration);
+
 export default async function handler(req, res) {
-  const { messages } = req.body;
-
   try {
-    console.log("📡 שליחת הודעה ל־OpenAI:", JSON.stringify(messages, null, 2));
+    const { messages } = req.body;
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: "gpt-3.5-turbo",
-        messages: messages,
-        temperature: 0.7
-      })
+    if (!messages || !Array.isArray(messages)) {
+      console.error("לא התקבל מערך הודעות תקין.");
+      return res.status(400).json({ error: "Invalid request format." });
+    }
+
+    console.log("💬 הודעות נכנסות:", JSON.stringify(messages, null, 2));
+
+    const response = await openai.createChatCompletion({
+      model: "gpt-3.5-turbo",
+      messages,
+      temperature: 0.75,
     });
 
-    const data = await response.json();
+    const reply = response.data.choices[0].message.content;
 
-    console.log("✅ תשובה מ־OpenAI:", JSON.stringify(data, null, 2));
-
-    const reply = data?.choices?.[0]?.message?.content?.trim();
-
-    if (!reply) {
-      throw new Error("לא התקבלה תשובה תקינה מהשרת");
-    }
+    console.log("🤖 תשובת GPT:", reply);
 
     res.status(200).json({ reply });
   } catch (error) {
-    console.error("❌ שגיאה בשיחה עם OpenAI:", error.message || error);
-    res.status(500).json({ reply: "ליבי: מצטערת, משהו השתבש. רוצה לנסות שוב?" });
+    console.error("❌ שגיאה:", error?.response?.data || error.message);
+    res.status(500).json({ error: "שגיאה בשיחה. נסי שוב מאוחר יותר." });
   }
 }
