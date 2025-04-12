@@ -21,6 +21,7 @@ export default function LibiChat() {
 
   const handleSend = async () => {
     if (!input.trim()) return;
+
     const newMessages = [...messages, { role: 'user', content: input }];
     setMessages(newMessages);
     setInput('');
@@ -34,9 +35,15 @@ export default function LibiChat() {
       });
 
       const data = await response.json();
-      setMessages([...newMessages, { role: 'assistant', content: data.reply }]);
+
+      if (data.reply) {
+        setMessages([...newMessages, { role: 'assistant', content: data.reply }]);
+      } else {
+        setMessages([...newMessages, { role: 'assistant', content: "מצטערת, משהו השתבש. רוצה לנסח שוב?" }]);
+      }
     } catch (error) {
-      setMessages([...newMessages, { role: 'assistant', content: "מצטערת, קרתה תקלה. רוצה לנסות שוב?" }]);
+      console.error("שגיאה בשליחת הודעה:", error);
+      setMessages([...newMessages, { role: 'assistant', content: "מצטערת, הייתה שגיאה בשרת. רוצה לנסות שוב?" }]);
     }
 
     setLoading(false);
