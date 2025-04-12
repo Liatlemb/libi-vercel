@@ -12,28 +12,33 @@ export default async function handler(req, res) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        inputs: `Translate this to Hebrew and respond like a warm, supportive friend: ${prompt}`,
+        inputs: `Translate this message to Hebrew and answer warmly like a close friend: "${prompt}"`,
         parameters: {
-          max_new_tokens: 120,
-          temperature: 0.8
+          max_new_tokens: 150,
+          temperature: 0.9,
+          top_p: 0.95
         }
       })
     });
 
     const contentType = response.headers.get("content-type") || "";
-
     if (!contentType.includes("application/json")) {
       const errorText = await response.text();
-      console.error("❌ HuggingFace returned non-JSON:", errorText);
-      return res.status(500).json({ reply: "ליבי: נתקלה בבעיה מול השרת. ננסה שוב?" });
+      console.error("❌ Non-JSON response from Hugging Face:", errorText);
+      return res.status(500).json({ reply: "ליבי: קרתה תקלה מול השרת. אפשר לנסות שוב?" });
     }
 
     const data = await response.json();
-    const reply = data?.[0]?.generated_text?.trim() || "ליבי: לא הצלחתי להבין. רוצה לנסח שוב?";
+    const rawText = data?.[0]?.generated_text?.trim();
+
+    const reply = rawText && rawText.length > 3
+      ? rawText
+      : "ליבי: לא הצלחתי להבין. רוצה לנסח שוב?";
+
     res.status(200).json({ reply });
 
   } catch (error) {
-    console.error("🔥 Error talking to HuggingFace:", error);
-    res.status(500).json({ reply: "ליבי: הייתה שגיאה כללית. רוצה לנסות שוב?" });
+    console.error("🔥 HuggingFace error:", error);
+    res.status(500).json({ reply: "ליבי: נתקלה בבעיה כללית. ננסה שוב?" });
   }
 }
