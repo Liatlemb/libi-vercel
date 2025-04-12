@@ -2,9 +2,9 @@
 // רצה בדפדפן – מציגה שאלה יומית ומנהלת שיחה עם GPT בטון אימהי-חברי
 
 import React, { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '../components/ui/card';
+import { Input } from '../components/ui/input';
+import { Button } from '../components/ui/button';
 
 const questions = [
   "מה גרם לך לחייך היום?",
