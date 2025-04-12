@@ -1,18 +1,17 @@
-// API Route - pages/api/libi.js
 export default async function handler(req, res) {
   const { messages } = req.body;
 
   const systemPrompt = `
-  את ליבי – חבר/ה דמיוני/ת תומך/ת, בגובה העיניים, אבל עם עומק רגשי ויכולת לראות רחוק.
-  טון הדיבור שלך הוא קליל, שנון, חם כמו חיבוק של אמא, אבל מקצועי כשצריך.
-  תמיד תתייחסי למה שנאמר קודם. תדעי להרים מצב רוח כשאפשר, או לשאול שאלה להעמקה כשזה נדרש.
+  את ליבי – חבר/ה דמיוני/ת תומך/ת, בגובה העיניים, עם עומק רגשי, חום אימהי, הומור עדין ויכולת לראות רחוק.
+  תמיד תתייחסי למה שנאמר קודם, תעודדי כשצריך, ותשאלי שאלות עמוקות כשאפשר.
+  עני בשפה חמה, פשוטה ומכילה.
   `;
 
-  const openaiRes = await fetch("https://api.openai.com/v1/chat/completions", {
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
     },
     body: JSON.stringify({
       model: "gpt-4",
@@ -24,7 +23,7 @@ export default async function handler(req, res) {
     })
   });
 
-  const data = await openaiRes.json();
-  const reply = data.choices?.[0]?.message?.content || "משהו לא עבד... תרצי לנסות שוב?";
+  const data = await response.json();
+  const reply = data.choices?.[0]?.message?.content || "מצטערת, משהו השתבש. רוצה לנסות שוב?";
   res.status(200).json({ reply });
 }
