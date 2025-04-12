@@ -1,10 +1,4 @@
-// אפליקציית ווב בסיסית עם צ'אט של "ליבי – חבר מעולם אחר"
-// רצה בדפדפן – מציגה שאלה יומית ומנהלת שיחה עם GPT בטון אימהי-חברי
-
 import React, { useState } from 'react';
-import { Card, CardContent } from '../components/ui/card';
-import { Input } from '../components/ui/input';
-import { Button } from '../components/ui/button';
 
 const questions = [
   "מה גרם לך לחייך היום?",
@@ -43,24 +37,27 @@ export default function LibiChat() {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-4 space-y-4">
-      <Card>
-        <CardContent className="space-y-2">
-          {messages.map((m, i) => (
-            <div key={i} className={`text-${m.role === 'user' ? 'right' : 'left'}`}>{m.content}</div>
-          ))}
-          <div className="flex gap-2">
-            <Input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="כתבי לי משהו מהלב..."
-              disabled={loading}
-            />
-            <Button onClick={handleSend} disabled={loading}>שלח</Button>
+    <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px', fontFamily: 'sans-serif' }}>
+      <div style={{ border: '1px solid #ccc', borderRadius: '12px', padding: '16px', backgroundColor: '#f9f9f9' }}>
+        {messages.map((m, i) => (
+          <div key={i} style={{ textAlign: m.role === 'user' ? 'right' : 'left', marginBottom: '8px' }}>
+            {m.content}
           </div>
-        </CardContent>
-      </Card>
+        ))}
+        <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+          <input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+            placeholder="כתבי לי משהו מהלב..."
+            disabled={loading}
+            style={{ flex: 1, padding: '8px', borderRadius: '6px', border: '1px solid #ccc' }}
+          />
+          <button onClick={handleSend} disabled={loading} style={{ padding: '8px 16px', borderRadius: '6px', backgroundColor: '#ffd700', border: 'none' }}>
+            שלח
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
